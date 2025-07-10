@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,6 +13,7 @@ import { Trash2, Edit, Plus } from 'lucide-react';
 import { useProducts } from '@/contexts/ProductsContext';
 import { Product } from '@/types';
 import ProductPreview from '@/components/ProductPreview';
+import { ConnectionStatus } from '@/components/ConnectionStatus';
 import { toast } from '@/hooks/use-toast';
 
 const productSchema = z.object({
@@ -137,6 +137,8 @@ const Admin = () => {
           <h1 className="text-4xl font-bold text-white mb-2">Panel de Administración</h1>
           <p className="text-gray-300">Gestiona los productos de tu tienda</p>
         </div>
+
+        <ConnectionStatus />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* Formulario */}

@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AuthContextType, User, RegisterData } from '../types';
+import { authService } from '../services/api';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -28,19 +29,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       setIsLoading(true);
-      // Simulate API call - replace with actual authentication
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await authService.login(email, password);
       
-      // Mock user data - replace with actual API response
       const userData: User = {
-        id: '1',
-        name: 'Usuario Demo',
-        email: email,
-        phone: '+1234567890',
-        address: 'Dirección Demo',
-        country: 'País Demo',
-        city: 'Ciudad Demo',
-        createdAt: new Date(),
+        id: response.user.id,
+        name: response.user.name,
+        email: response.user.email,
+        phone: response.user.phone || '',
+        address: response.user.address || '',
+        country: response.user.country || '',
+        city: response.user.city || '',
+        createdAt: new Date(response.user.createdAt),
       };
 
       setUser(userData);
@@ -57,18 +56,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (userData: RegisterData): Promise<boolean> => {
     try {
       setIsLoading(true);
-      // Simulate API call - replace with actual registration
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await authService.register(userData);
       
       const newUser: User = {
-        id: Date.now().toString(),
-        name: userData.name,
-        email: userData.email,
-        phone: userData.phone,
-        address: userData.address,
-        country: userData.country,
-        city: userData.city,
-        createdAt: new Date(),
+        id: response.user.id,
+        name: response.user.name,
+        email: response.user.email,
+        phone: response.user.phone || userData.phone,
+        address: response.user.address || userData.address,
+        country: response.user.country || userData.country,
+        city: response.user.city || userData.city,
+        createdAt: new Date(response.user.createdAt || Date.now()),
       };
 
       setUser(newUser);
@@ -84,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
+    authService.logout();
   };
 
   return (

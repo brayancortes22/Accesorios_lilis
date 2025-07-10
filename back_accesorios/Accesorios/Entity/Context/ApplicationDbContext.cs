@@ -97,8 +97,11 @@ namespace Entity.Context
             // Configuraciones específicas de CarritoProducto
             modelBuilder.Entity<CarritoProducto>(entity =>
             {
-                entity.Property(e => e.DetalleEncargo)
-                    .HasMaxLength(500);
+                entity.Property(e => e.PrecioUnitario)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.Property(e => e.Subtotal)
+                    .HasColumnType("decimal(18,2)");
 
                 entity.HasOne(d => d.Carrito)
                     .WithMany(p => p.CarritoProductos)
@@ -117,18 +120,27 @@ namespace Entity.Context
                 entity.Property(e => e.Total)
                     .HasColumnType("decimal(18,2)");
 
+                entity.Property(e => e.Subtotal)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.Property(e => e.Impuestos)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.Property(e => e.CostoEnvio)
+                    .HasColumnType("decimal(18,2)");
+
                 entity.Property(e => e.Estado)
                     .IsRequired()
-                    .HasMaxLength(20)
+                    .HasMaxLength(50)
                     .HasDefaultValue("Pendiente");
 
                 entity.Property(e => e.MetodoPago)
                     .HasMaxLength(50);
 
-                entity.Property(e => e.DireccionEntrega)
-                    .HasMaxLength(200);
+                entity.Property(e => e.DireccionEnvio)
+                    .HasMaxLength(255);
 
-                entity.Property(e => e.Comentarios)
+                entity.Property(e => e.Notas)
                     .HasMaxLength(500);
 
                 entity.HasOne(d => d.Usuario)
@@ -140,7 +152,16 @@ namespace Entity.Context
             // Configuraciones específicas de PedidoProducto
             modelBuilder.Entity<PedidoProducto>(entity =>
             {
-                entity.Property(e => e.DetalleEncargo)
+                entity.Property(e => e.PrecioUnitario)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.Property(e => e.Subtotal)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.Property(e => e.Personalizacion)
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.Notas)
                     .HasMaxLength(500);
 
                 entity.HasOne(d => d.Pedido)
@@ -161,15 +182,22 @@ namespace Entity.Context
                     .IsRequired()
                     .HasMaxLength(2000);
 
-                entity.Property(e => e.EstadoEnvio)
+                entity.Property(e => e.Estado)
                     .IsRequired()
-                    .HasMaxLength(20)
+                    .HasMaxLength(50)
                     .HasDefaultValue("Pendiente");
 
-                entity.HasOne(d => d.Pedido)
+                entity.Property(e => e.Tipo)
+                    .HasMaxLength(50)
+                    .HasDefaultValue("Consulta");
+
+                entity.Property(e => e.NombreContacto)
+                    .HasMaxLength(100);
+
+                entity.HasOne(d => d.Usuario)
                     .WithMany(p => p.WhatsappMensajes)
-                    .HasForeignKey(d => d.PedidoId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .HasForeignKey(d => d.UsuarioId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             // Configuración de entidades base

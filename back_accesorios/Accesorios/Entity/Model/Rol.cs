@@ -1,10 +1,17 @@
-using System.Collections.Generic;
 using Entity.Model.Base;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Model
 {
+    [Table("Roles")]
     public class Rol : BaseModel
     {
-        public ICollection<Usuario> Usuarios { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string Codigo { get; set; } = string.Empty;
+
+        // Navigation Properties
+        public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
     }
 }

@@ -1,13 +1,15 @@
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product } from '@/types';
-import { products as initialProducts } from '@/data/products';
+import { productService } from '@/services/api';
 
 interface ProductsContextType {
   products: Product[];
-  addProduct: (product: Product) => void;
-  updateProduct: (id: string, product: Partial<Product>) => void;
-  deleteProduct: (id: string) => void;
+  loading: boolean;
+  addProduct: (product: Omit<Product, 'id'>) => Promise<void>;
+  updateProduct: (id: string, product: Partial<Product>) => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
+  fetchProducts: () => Promise<void>;
 }
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
@@ -21,26 +23,68 @@ export const useProducts = () => {
 };
 
 export const ProductsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const addProduct = (product: Product) => {
-    setProducts(prev => [...prev, product]);
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const fetchedProducts = await productService.getAllProducts();
+      setProducts(fetchedProducts);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const updateProduct = (id: string, updatedProduct: Partial<Product>) => {
-    setProducts(prev => 
-      prev.map(product => 
-        product.id === id ? { ...product, ...updatedProduct } : product
-      )
-    );
+  const addProduct = async (product: Omit<Product, 'id'>) => {
+    try {
+      const newProduct = await productService.createProduct(product);
+      setProducts(prev => [...prev, newProduct]);
+    } catch (error) {
+      console.error('Error adding product:', error);
+      throw error;
+    }
   };
 
-  const deleteProduct = (id: string) => {
-    setProducts(prev => prev.filter(product => product.id !== id));
+  const updateProduct = async (id: string, updatedProduct: Partial<Product>) => {
+    try {
+      const updated = await productService.updateProduct(id, updatedProduct);
+      setProducts(prev => 
+        prev.map(product => 
+          product.id === id ? updated : product
+        )
+      );
+    } catch (error) {
+      console.error('Error updating product:', error);
+      throw error;
+    }
   };
+
+  const deleteProduct = async (id: string) => {
+    try {
+      await productService.deleteProduct(id);
+      setProducts(prev => prev.filter(product => product.id !== id));
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   return (
-    <ProductsContext.Provider value={{ products, addProduct, updateProduct, deleteProduct }}>
+    <ProductsContext.Provider value={{ 
+      products, 
+      loading, 
+      addProduct, 
+      updateProduct, 
+      deleteProduct, 
+      fetchProducts 
+    }}>
       {children}
     </ProductsContext.Provider>
   );

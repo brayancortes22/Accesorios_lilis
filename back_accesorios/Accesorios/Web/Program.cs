@@ -69,9 +69,9 @@ builder.Services.AddScoped<IRolBusiness, RolBusiness>();
 builder.Services.AddScoped<ISeccionBusiness, SeccionBusiness>();
 builder.Services.AddScoped<IProductoBusiness, ProductoBusiness>();
 builder.Services.AddScoped<ICarritoBusiness, CarritoBusiness>();
-builder.Services.AddScoped<ICarritoProductoBusiness, CarritoProductoBusiness>();
+// builder.Services.AddScoped<ICarritoProductoBusiness, CarritoProductoBusiness>(); // Manejado por CarritoBusiness
 builder.Services.AddScoped<IPedidoBusiness, PedidoBusiness>();
-builder.Services.AddScoped<IPedidoProductoBusiness, PedidoProductoBusiness>();
+// builder.Services.AddScoped<IPedidoProductoBusiness, PedidoProductoBusiness>(); // Manejado por PedidoBusiness
 builder.Services.AddScoped<IWhatsappMensajeBusiness, WhatsappMensajeBusiness>();
 
 // Registrar todos los perfiles de AutoMapper de una vez
