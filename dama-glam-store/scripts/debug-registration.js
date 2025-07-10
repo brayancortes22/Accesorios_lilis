@@ -8,7 +8,7 @@ async function debugRegistration() {
   const testUser = {
     nombre: 'Test Debug',
     email: `debug${timestamp}@test.com`,
-    password: 'test123', // Campo correcto para el endpoint /register
+    passwordHash: 'test123', // Campo correcto para el DTO
     telefono: '1234567890',
     direccion: 'Test Address',
     ciudad: 'Test City',

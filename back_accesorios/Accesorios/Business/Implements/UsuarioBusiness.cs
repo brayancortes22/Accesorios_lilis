@@ -370,8 +370,21 @@ namespace Business.Implements
 
         private bool VerifyPassword(string password, string hash)
         {
-            // Verificar usando BCrypt
-            return BCrypt.Net.BCrypt.Verify(password, hash);
+            try
+            {
+                _logger.LogInformation($"Verificando contraseña - Password length: {password?.Length}, Hash length: {hash?.Length}");
+                _logger.LogInformation($"Hash starts with: {hash?.Substring(0, Math.Min(10, hash?.Length ?? 0))}...");
+                
+                // Verificar usando BCrypt
+                bool result = BCrypt.Net.BCrypt.Verify(password, hash);
+                _logger.LogInformation($"Resultado de verificación: {result}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error en verificación de contraseña: {ex.Message}");
+                return false;
+            }
         }
 
         public async Task<IEnumerable<UsuarioDto>> GetByRolIdAsync(int rolId)

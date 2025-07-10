@@ -1,4 +1,15 @@
 // Script para probar registro y login con las correcciones
+const testUser = {
+    nombre: 'Usuario Nuevo',
+    email: `nuevo${timestamp}@test.com`,
+    passwordHash: 'password123', // Campo correcto para el DTO
+    telefono: '1234567890',
+    direccion: 'Calle Nueva 123',
+    ciudad: 'Ciudad Nueva',
+    pais: 'Colombia',
+    rolId: 2 // Cliente
+  };
+//   bar registro y login con las correcciones
 const API_BASE_URL = 'http://localhost:7147/api';
 
 async function testRegistrationAndLogin() {
@@ -9,7 +20,7 @@ async function testRegistrationAndLogin() {
   const testUser = {
     nombre: 'Usuario Nuevo',
     email: `nuevo${timestamp}@test.com`,
-    password: 'password123', // Campo correcto para el endpoint /register
+    password: 'password123', // Campo correcto para UsuarioCreateDto
     telefono: '1234567890',
     direccion: 'Calle Nueva 123',
     ciudad: 'Ciudad Nueva',
