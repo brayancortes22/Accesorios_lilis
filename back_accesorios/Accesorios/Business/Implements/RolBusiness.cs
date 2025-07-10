@@ -45,6 +45,13 @@ namespace Business.Implements
             var exists = await _rolData.ExistsByCodigoAsync(codigo, excludeId);
             return !exists; // Si existe, no es único
         }
+
+        public async Task<IEnumerable<RolDto>> GetActivosAsync()
+        {
+            var roles = await _rolData.GetAllAsync();
+            var rolesActivos = roles.Where(r => r.Active);
+            return _mapper.Map<IEnumerable<RolDto>>(rolesActivos);
+        }
     }
 }
 

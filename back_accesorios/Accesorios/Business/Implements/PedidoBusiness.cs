@@ -166,5 +166,61 @@ namespace Business.Implements
         {
             return await _pedidoData.UpdateEstadoAsync(pedidoId, "Entregado");
         }
+
+        public async Task<IEnumerable<PedidoDto>> GetByUsuarioIdAsync(int usuarioId)
+        {
+            var pedidos = await _pedidoData.GetAllAsync();
+            var pedidosUsuario = pedidos.Where(p => p.UsuarioId == usuarioId);
+            return _mapper.Map<IEnumerable<PedidoDto>>(pedidosUsuario);
+        }
+
+        public async Task<PedidoDto?> CrearPedidoDesdeCarritoAsync(CrearPedidoDesdeCarritoDto dto)
+        {
+            try
+            {
+                var pedidoCreado = await CreateOrderFromCartAsync(dto);
+                return pedidoCreado;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<PedidoDto?> ActualizarEstadoAsync(int pedidoId, string estado, string? notas)
+        {
+            var pedido = await _pedidoData.GetByIdAsync(pedidoId);
+            if (pedido == null)
+                return null;
+
+            pedido.Estado = estado;
+            if (!string.IsNullOrWhiteSpace(notas))
+                pedido.Notas = notas;
+
+            var actualizado = await _pedidoData.UpdateAsync(pedido);
+            return _mapper.Map<PedidoDto>(actualizado);
+        }
+
+        public async Task<PedidoDto?> ConfirmarEntregaAsync(int pedidoId, DateTime fechaEntrega, string? referenciaPago)
+        {
+            var pedido = await _pedidoData.GetByIdAsync(pedidoId);
+            if (pedido == null)
+                return null;
+
+            pedido.Estado = "Entregado";
+            pedido.FechaEntrega = fechaEntrega;
+            if (!string.IsNullOrWhiteSpace(referenciaPago))
+                pedido.ReferenciaPago = referenciaPago;
+
+            var actualizado = await _pedidoData.UpdateAsync(pedido);
+            return _mapper.Map<PedidoDto>(actualizado);
+        }
+
+        public async Task<IEnumerable<PedidoDto>> GetByEstadoAsync(string estado)
+        {
+            var pedidos = await _pedidoData.GetAllAsync();
+            var pedidosPorEstado = pedidos.Where(p => p.Estado.Equals(estado, StringComparison.OrdinalIgnoreCase));
+            return _mapper.Map<IEnumerable<PedidoDto>>(pedidosPorEstado);
+        }
     }
 }

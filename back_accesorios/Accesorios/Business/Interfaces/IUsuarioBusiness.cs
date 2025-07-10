@@ -62,5 +62,12 @@ namespace Business.Interfaces
         /// <param name="excludeId">ID de usuario a excluir</param>
         /// <returns>True si es único</returns>
         Task<bool> IsEmailUniqueAsync(string email, int? excludeId = null);
+
+        /// <summary>
+        /// Obtiene usuarios por rol
+        /// </summary>
+        /// <param name="rolId">ID del rol</param>
+        /// <returns>Lista de usuarios del rol</returns>
+        Task<IEnumerable<UsuarioDto>> GetByRolIdAsync(int rolId);
     }
 }

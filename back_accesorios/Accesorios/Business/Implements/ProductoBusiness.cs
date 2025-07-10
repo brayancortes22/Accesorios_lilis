@@ -74,5 +74,12 @@ namespace Business.Implements
             var productosActivos = productos.Where(p => p.Active == true).ToList();
             return _mapper.Map<List<ProductoListDto>>(productosActivos);
         }
+
+        public async Task<IEnumerable<ProductoDto>> GetBySeccionIdAsync(int seccionId)
+        {
+            var productos = await _productoData.GetAllAsync();
+            var productosPorSeccion = productos.Where(p => p.SeccionId == seccionId);
+            return _mapper.Map<IEnumerable<ProductoDto>>(productosPorSeccion);
+        }
     }
 }

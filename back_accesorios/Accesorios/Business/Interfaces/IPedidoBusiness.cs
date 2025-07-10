@@ -83,5 +83,44 @@ namespace Business.Interfaces
         /// <param name="pedidoId">ID del pedido</param>
         /// <returns>True si se marcó como entregado</returns>
         Task<bool> MarkAsDeliveredAsync(int pedidoId);
+
+        /// <summary>
+        /// Obtiene pedidos por usuario
+        /// </summary>
+        /// <param name="usuarioId">ID del usuario</param>
+        /// <returns>Lista de pedidos del usuario</returns>
+        Task<IEnumerable<PedidoDto>> GetByUsuarioIdAsync(int usuarioId);
+
+        /// <summary>
+        /// Crea un pedido desde carrito
+        /// </summary>
+        /// <param name="dto">Datos para crear el pedido</param>
+        /// <returns>Pedido creado</returns>
+        Task<PedidoDto?> CrearPedidoDesdeCarritoAsync(CrearPedidoDesdeCarritoDto dto);
+
+        /// <summary>
+        /// Actualiza el estado de un pedido
+        /// </summary>
+        /// <param name="pedidoId">ID del pedido</param>
+        /// <param name="estado">Nuevo estado</param>
+        /// <param name="notas">Notas adicionales</param>
+        /// <returns>Pedido actualizado</returns>
+        Task<PedidoDto?> ActualizarEstadoAsync(int pedidoId, string estado, string? notas);
+
+        /// <summary>
+        /// Confirma la entrega de un pedido
+        /// </summary>
+        /// <param name="pedidoId">ID del pedido</param>
+        /// <param name="fechaEntrega">Fecha de entrega</param>
+        /// <param name="referenciaPago">Referencia de pago</param>
+        /// <returns>Pedido actualizado</returns>
+        Task<PedidoDto?> ConfirmarEntregaAsync(int pedidoId, DateTime fechaEntrega, string? referenciaPago);
+
+        /// <summary>
+        /// Obtiene pedidos por estado
+        /// </summary>
+        /// <param name="estado">Estado del pedido</param>
+        /// <returns>Lista de pedidos con el estado especificado</returns>
+        Task<IEnumerable<PedidoDto>> GetByEstadoAsync(string estado);
     }
 }

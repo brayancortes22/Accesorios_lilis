@@ -43,6 +43,5 @@ namespace Entity.Model
 
         public virtual ICollection<Carrito> Carritos { get; set; } = new List<Carrito>();
         public virtual ICollection<Pedido> Pedidos { get; set; } = new List<Pedido>();
-        public virtual ICollection<WhatsappMensaje> WhatsappMensajes { get; set; } = new List<WhatsappMensaje>();
     }
 }

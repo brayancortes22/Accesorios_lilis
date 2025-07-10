@@ -317,6 +317,13 @@ namespace Business.Implements
             return BCrypt.Net.BCrypt.Verify(password, hash);
         }
 
+        public async Task<IEnumerable<UsuarioDto>> GetByRolIdAsync(int rolId)
+        {
+            var usuarios = await _usuarioData.GetAllAsync();
+            var usuariosPorRol = usuarios.Where(u => u.RolId == rolId);
+            return _mapper.Map<IEnumerable<UsuarioDto>>(usuariosPorRol);
+        }
+
         #endregion
     }
 }

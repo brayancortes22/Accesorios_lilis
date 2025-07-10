@@ -7,12 +7,13 @@ using System.Text;
 using Business.Interfaces;
 using Entity.Dtos;
 using Entity.Model;
+using Web.Controllers.Interface;
 
 namespace Web.Controllers.Implements
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : ControllerBase, IAuthController
     {
         private readonly IUsuarioBusiness _usuarioBusiness;
         private readonly IConfiguration _configuration;
@@ -26,40 +27,35 @@ namespace Web.Controllers.Implements
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] Entity.Dtos.LoginDto loginDto)
         {
             try
             {
-                // Buscar usuario por email
-                var usuarios = await _usuarioBusiness.GetAllAsync();
-                var usuario = usuarios.FirstOrDefault(u => u.Email == loginDto.Email);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-                if (usuario == null)
+                // Usar el método de negocio que maneja la autenticación completa
+                var loginResponse = await _usuarioBusiness.LoginAsync(loginDto);
+                
+                if (loginResponse == null)
                 {
                     return Unauthorized(new { message = "Email o contraseña incorrectos" });
                 }
-
-                // Verificar contraseña (aquí deberías usar BCrypt para verificar el hash)
-                if (!VerifyPassword(loginDto.Password, usuario.PasswordHash))
-                {
-                    return Unauthorized(new { message = "Email o contraseña incorrectos" });
-                }
-
-                // Generar token JWT
-                var token = GenerateJwtToken(usuario);
 
                 var response = new
                 {
                     user = new
                     {
-                        id = usuario.Id.ToString(),
-                        name = usuario.Name,
-                        email = usuario.Email,
-                        phone = usuario.Telefono,
-                        address = usuario.Direccion,
-                        createdAt = usuario.FechaRegistro
+                        id = loginResponse.Usuario.Id.ToString(),
+                        name = loginResponse.Usuario.Nombre,
+                        email = loginResponse.Usuario.Email,
+                        phone = loginResponse.Usuario.Telefono,
+                        address = loginResponse.Usuario.Direccion,
+                        createdAt = loginResponse.Usuario.FechaCreacion
                     },
-                    token = token
+                    token = loginResponse.Token
                 };
 
                 return Ok(response);
@@ -72,48 +68,42 @@ namespace Web.Controllers.Implements
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody] Web.Controllers.Interface.RegisterDto registerDto)
         {
             try
             {
-                // Verificar si el email ya existe
-                var usuarios = await _usuarioBusiness.GetAllAsync();
-                if (usuarios.Any(u => u.Email == registerDto.Email))
+                if (!ModelState.IsValid)
                 {
-                    return BadRequest(new { message = "El email ya está registrado" });
+                    return BadRequest(ModelState);
                 }
 
-                // Crear nuevo usuario
-                var usuarioDto = new UsuarioDto
+                // Crear UsuarioCreateDto
+                var usuarioCreateDto = new UsuarioCreateDto
                 {
-                    Name = registerDto.Nombre,
-                    Description = "Usuario cliente",
+                    Nombre = registerDto.Nombre,
                     Email = registerDto.Email,
-                    PasswordHash = HashPassword(registerDto.Password),
+                    PasswordHash = registerDto.Password, // RegisterAsync manejará el hash
                     Telefono = registerDto.Telefono,
                     Direccion = registerDto.Direccion,
-                    FechaRegistro = DateTime.UtcNow,
-                    RolId = 2, // Rol de cliente por defecto
+                    RolId = 2, // Cliente por defecto
                     Activo = true
                 };
 
-                var nuevoUsuario = await _usuarioBusiness.CreateAsync(usuarioDto);
-
-                // Generar token JWT
-                var token = GenerateJwtToken(nuevoUsuario);
+                // Usar el método de negocio que maneja todo el proceso de registro
+                var nuevoUsuario = await _usuarioBusiness.RegisterAsync(usuarioCreateDto);
 
                 var response = new
                 {
                     user = new
                     {
                         id = nuevoUsuario.Id.ToString(),
-                        name = nuevoUsuario.Name,
+                        name = nuevoUsuario.Nombre,
                         email = nuevoUsuario.Email,
                         phone = nuevoUsuario.Telefono,
                         address = nuevoUsuario.Direccion,
-                        createdAt = nuevoUsuario.FechaRegistro
+                        createdAt = nuevoUsuario.FechaCreacion
                     },
-                    token = token
+                    message = "Usuario registrado exitosamente"
                 };
 
                 return Ok(response);
@@ -146,11 +136,11 @@ namespace Web.Controllers.Implements
                 var response = new
                 {
                     id = usuario.Id.ToString(),
-                    name = usuario.Name,
+                    name = usuario.Nombre,
                     email = usuario.Email,
                     phone = usuario.Telefono,
                     address = usuario.Direccion,
-                    createdAt = usuario.FechaRegistro
+                    createdAt = usuario.FechaCreacion
                 };
 
                 return Ok(response);

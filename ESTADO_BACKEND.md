@@ -8,13 +8,13 @@
 - ✅ Inyección de dependencias configurada
 
 ### 2. Capa de Entidades (Entity)
-- ✅ **Modelos**: Usuario, Rol, Seccion, Producto, Carrito, CarritoProducto, Pedido, PedidoProducto, WhatsappMensaje
+- ✅ **Modelos**: Usuario, Rol, Seccion, Producto, Carrito, CarritoProducto, Pedido, PedidoProducto
 - ✅ **DTOs**: Todos los DTOs principales creados con versiones Create/Update/List
 - ✅ **Contexto**: ApplicationDbContext configurado con todas las relaciones
 - ✅ **BaseModel**: Clase base con propiedades comunes (Id, Name, Description, Active)
 
 ### 3. Capa de Datos (Data)
-- ✅ **Interfaces**: IUsuarioData, IRolData, ISeccionData, IProductoData, ICarritoData, ICarritoProductoData, IPedidoData, IPedidoProductoData, IWhatsappMensajeData
+- ✅ **Interfaces**: IUsuarioData, IRolData, ISeccionData, IProductoData, ICarritoData, ICarritoProductoData, IPedidoData, IPedidoProductoData
 - ✅ **Implementaciones**: Todas las clases Data implementadas con métodos básicos CRUD
 - ✅ **BaseData**: Clase base genérica para operaciones comunes
 
@@ -25,7 +25,6 @@
 - 🔄 **PedidoBusiness**: Implementado pero con errores de interfaz
 - 🔄 **SeccionBusiness**: Implementado pero con errores de interfaz
 - 🔄 **RolBusiness**: Implementado pero con errores de interfaz
-- 🔄 **WhatsappMensajeBusiness**: Implementado pero con errores de interfaz
 
 ### 5. Utilidades (Utilities)
 - ✅ **AutoMapper**: Perfiles creados para todas las entidades
@@ -50,7 +49,6 @@
 - ❌ **PedidosController**: Creación y gestión de pedidos
 - ❌ **SeccionesController**: Gestión de secciones/categorías
 - ❌ **UsuariosController**: Gestión de usuarios (admin)
-- ❌ **WhatsappController**: Gestión de mensajes
 
 ### 2. Configuración del Proyecto Web
 - ❌ **Startup/Program.cs**: Configurar servicios, JWT, CORS, Swagger

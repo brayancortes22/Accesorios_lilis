@@ -34,5 +34,11 @@ namespace Business.Interfaces
         /// <param name="excludeId">ID de rol a excluir</param>
         /// <returns>True si es único</returns>
         Task<bool> IsCodigoUniqueAsync(string codigo, int? excludeId = null);
+
+        /// <summary>
+        /// Obtiene todos los roles activos
+        /// </summary>
+        /// <returns>Lista de roles activos</returns>
+        Task<IEnumerable<RolDto>> GetActivosAsync();
     }
 }

@@ -25,17 +25,17 @@ namespace Web.Controllers.Implements
         {
             try
             {
-                var usuarios = await _usuarioBusiness.GetAllAsync();
-                var usuario = usuarios.FirstOrDefault(u => u.Email == request.Email);
-
-                if (usuario == null)
+                // Crear LoginDto para usar el método de negocio
+                var loginDto = new Entity.Dtos.LoginDto
                 {
-                    return Unauthorized(new { message = "Email o contraseña incorrectos" });
-                }
+                    Email = request.Email,
+                    Password = request.Password
+                };
 
-                // Aquí deberías verificar la contraseña hasheada
-                // Por ahora usamos verificación simple
-                if (usuario.PasswordHash != request.Password) // En producción usar BCrypt
+                // Usar el método de negocio que maneja la autenticación completa
+                var loginResponse = await _usuarioBusiness.LoginAsync(loginDto);
+                
+                if (loginResponse == null)
                 {
                     return Unauthorized(new { message = "Email o contraseña incorrectos" });
                 }
@@ -44,16 +44,16 @@ namespace Web.Controllers.Implements
                 {
                     user = new
                     {
-                        id = usuario.Id.ToString(),
-                        name = usuario.Name,
-                        email = usuario.Email,
-                        phone = usuario.Telefono,
-                        address = usuario.Direccion,
+                        id = loginResponse.Usuario.Id.ToString(),
+                        name = loginResponse.Usuario.Nombre,
+                        email = loginResponse.Usuario.Email,
+                        phone = loginResponse.Usuario.Telefono,
+                        address = loginResponse.Usuario.Direccion,
                         country = "Colombia", // Campo por defecto
                         city = "Bogotá", // Campo por defecto
-                        createdAt = usuario.FechaRegistro
+                        createdAt = loginResponse.Usuario.FechaCreacion
                     },
-                    token = "fake-jwt-token" // En producción generar JWT real
+                    token = loginResponse.Token
                 };
 
                 return Ok(response);
@@ -77,34 +77,35 @@ namespace Web.Controllers.Implements
                     return BadRequest(new { message = "El email ya está registrado" });
                 }
 
-                var usuarioDto = new UsuarioDto
+                // Crear UsuarioCreateDto
+                var usuarioCreateDto = new UsuarioCreateDto
                 {
-                    Name = request.Name,
+                    Nombre = request.Name,
                     Email = request.Email,
-                    PasswordHash = request.PasswordHash, // En producción hashear con BCrypt
+                    PasswordHash = request.PasswordHash, // RegisterAsync manejará el hash
                     Telefono = request.Telefono,
                     Direccion = request.Direccion,
-                    FechaRegistro = DateTime.UtcNow,
                     RolId = request.RolId,
                     Activo = request.Activo
                 };
 
-                var nuevoUsuario = await _usuarioBusiness.CreateAsync(usuarioDto);
+                // Usar el método de negocio que maneja todo el proceso de registro
+                var nuevoUsuario = await _usuarioBusiness.RegisterAsync(usuarioCreateDto);
 
                 var response = new
                 {
                     user = new
                     {
                         id = nuevoUsuario.Id.ToString(),
-                        name = nuevoUsuario.Name,
+                        name = nuevoUsuario.Nombre,
                         email = nuevoUsuario.Email,
                         phone = nuevoUsuario.Telefono,
                         address = nuevoUsuario.Direccion,
                         country = "Colombia",
                         city = "Bogotá",
-                        createdAt = nuevoUsuario.FechaRegistro
+                        createdAt = nuevoUsuario.FechaCreacion
                     },
-                    token = "fake-jwt-token"
+                    message = "Usuario registrado exitosamente"
                 };
 
                 return Ok(response);

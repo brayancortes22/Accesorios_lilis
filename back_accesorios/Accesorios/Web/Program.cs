@@ -61,7 +61,6 @@ builder.Services.AddScoped<ICarritoData, CarritoData>();
 builder.Services.AddScoped<ICarritoProductoData, CarritoProductoData>();
 builder.Services.AddScoped<IPedidoData, PedidoData>();
 builder.Services.AddScoped<IPedidoProductoData, PedidoProductoData>();
-builder.Services.AddScoped<IWhatsappMensajeData, WhatsappMensajeData>();
 
 // Registrar servicios específicos de Business
 builder.Services.AddScoped<IUsuarioBusiness, UsuarioBusiness>();
@@ -72,7 +71,7 @@ builder.Services.AddScoped<ICarritoBusiness, CarritoBusiness>();
 // builder.Services.AddScoped<ICarritoProductoBusiness, CarritoProductoBusiness>(); // Manejado por CarritoBusiness
 builder.Services.AddScoped<IPedidoBusiness, PedidoBusiness>();
 // builder.Services.AddScoped<IPedidoProductoBusiness, PedidoProductoBusiness>(); // Manejado por PedidoBusiness
-builder.Services.AddScoped<IWhatsappMensajeBusiness, WhatsappMensajeBusiness>();
+
 
 // Registrar todos los perfiles de AutoMapper de una vez
 builder.Services.AddAutoMapper(typeof(UsuarioProfile).Assembly);

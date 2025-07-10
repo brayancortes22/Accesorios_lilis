@@ -46,5 +46,11 @@ namespace Business.Interfaces
         /// <param name="excludeId">ID de sección a excluir</param>
         /// <returns>True si es único</returns>
         Task<bool> IsCodigoUniqueAsync(string codigo, int? excludeId = null);
+
+        /// <summary>
+        /// Obtiene secciones activas (alias para compatibilidad)
+        /// </summary>
+        /// <returns>Lista de secciones activas</returns>
+        Task<IEnumerable<SeccionDto>> GetActivasAsync();
     }
 }

@@ -42,8 +42,7 @@ namespace Entity.Context
         public DbSet<CarritoProducto> CarritoProductos { get; set; }
         public DbSet<Pedido> Pedidos { get; set; }
         public DbSet<PedidoProducto> PedidoProductos { get; set; }
-        public DbSet<WhatsappMensaje> WhatsappMensajes { get; set; }
-
+      
         /// <summary>
         /// Configura los modelos de la base de datos aplicando configuraciones desde ensamblados.
         /// </summary>
@@ -173,31 +172,6 @@ namespace Entity.Context
                     .WithMany(p => p.PedidoProductos)
                     .HasForeignKey(d => d.ProductoId)
                     .OnDelete(DeleteBehavior.Restrict);
-            });
-
-            // Configuraciones específicas de WhatsappMensaje
-            modelBuilder.Entity<WhatsappMensaje>(entity =>
-            {
-                entity.Property(e => e.Mensaje)
-                    .IsRequired()
-                    .HasMaxLength(2000);
-
-                entity.Property(e => e.Estado)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasDefaultValue("Pendiente");
-
-                entity.Property(e => e.Tipo)
-                    .HasMaxLength(50)
-                    .HasDefaultValue("Consulta");
-
-                entity.Property(e => e.NombreContacto)
-                    .HasMaxLength(100);
-
-                entity.HasOne(d => d.Usuario)
-                    .WithMany(p => p.WhatsappMensajes)
-                    .HasForeignKey(d => d.UsuarioId)
-                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             // Configuración de entidades base

@@ -67,5 +67,12 @@ namespace Business.Interfaces
         /// </summary>
         /// <returns>Lista de productos activos</returns>
         Task<List<ProductoListDto>> GetActiveProductsAsync();
+
+        /// <summary>
+        /// Obtiene productos por sección
+        /// </summary>
+        /// <param name="seccionId">ID de la sección</param>
+        /// <returns>Lista de productos de la sección</returns>
+        Task<IEnumerable<ProductoDto>> GetBySeccionIdAsync(int seccionId);
     }
 }

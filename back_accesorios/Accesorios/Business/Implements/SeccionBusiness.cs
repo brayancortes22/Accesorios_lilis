@@ -57,5 +57,12 @@ namespace Business.Implements
             var exists = await _seccionData.ExistsByCodigoAsync(codigo, excludeId);
             return !exists; // Si existe, no es único
         }
+
+        public async Task<IEnumerable<SeccionDto>> GetActivasAsync()
+        {
+            var secciones = await _seccionData.GetAllAsync();
+            var seccionesActivas = secciones.Where(s => s.Active);
+            return _mapper.Map<IEnumerable<SeccionDto>>(seccionesActivas);
+        }
     }
 }
