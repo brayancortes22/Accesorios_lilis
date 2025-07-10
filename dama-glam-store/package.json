@@ -9,7 +9,8 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test:api": "node scripts/test-api.js"
+    "test:api": "node scripts/test-api.js",
+    "init:db": "node scripts/init-db.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
