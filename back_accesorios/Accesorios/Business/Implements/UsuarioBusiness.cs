@@ -6,6 +6,7 @@ using Entity.Dtos;
 using Entity.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Logging;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -19,13 +20,15 @@ namespace Business.Implements
         private readonly IRolData _rolData;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<UsuarioBusiness> _logger;
 
-        public UsuarioBusiness(IUsuarioData usuarioData, IRolData rolData, IMapper mapper, IConfiguration configuration)
+        public UsuarioBusiness(IUsuarioData usuarioData, IRolData rolData, IMapper mapper, IConfiguration configuration, ILogger<UsuarioBusiness> logger)
         {
             _usuarioData = usuarioData;
             _rolData = rolData;
             _mapper = mapper;
             _configuration = configuration;
+            _logger = logger;
         }
 
         public override async Task<List<UsuarioDto>> GetAllAsync()
@@ -126,20 +129,42 @@ namespace Business.Implements
         {
             try
             {
+                _logger.LogInformation($"Iniciando login para email: {loginDto.Email}");
+                
                 var usuario = await _usuarioData.GetByEmailAsync(loginDto.Email);
                 if (usuario == null)
+                {
+                    _logger.LogWarning($"Usuario no encontrado para email: {loginDto.Email}");
                     throw new BusinessException("Email o contraseña incorrectos");
+                }
 
-                // Verificar contraseña (aquí deberías usar un hash)
+                _logger.LogInformation($"Usuario encontrado: {usuario.Nombre}, Active: {usuario.Active}");
+
+                // Verificar contraseña
+                _logger.LogInformation("Verificando contraseña...");
                 if (!VerifyPassword(loginDto.Password, usuario.PasswordHash))
+                {
+                    _logger.LogWarning($"Contraseña incorrecta para email: {loginDto.Email}");
                     throw new BusinessException("Email o contraseña incorrectos");
+                }
+
+                _logger.LogInformation("Contraseña verificada correctamente");
 
                 if (!usuario.Active)
+                {
+                    _logger.LogWarning($"Usuario inactivo: {loginDto.Email}");
                     throw new BusinessException("Usuario inactivo");
+                }
 
                 // Generar token JWT
+                _logger.LogInformation("Generando token JWT...");
                 var token = GenerateJwtToken(usuario);
+                _logger.LogInformation("Token JWT generado correctamente");
+                
+                // Mapear usuario
+                _logger.LogInformation("Mapeando usuario a DTO...");
                 var usuarioDto = _mapper.Map<UsuarioDto>(usuario);
+                _logger.LogInformation("Usuario mapeado correctamente");
 
                 return new LoginResponseDto
                 {
@@ -147,8 +172,13 @@ namespace Business.Implements
                     Token = token
                 };
             }
+            catch (BusinessException)
+            {
+                throw; // Re-lanzar BusinessException sin envolver
+            }
             catch (Exception ex)
             {
+                _logger.LogError(ex, $"Error inesperado en login para email: {loginDto.Email}");
                 throw new BusinessException("Error en el proceso de login", ex);
             }
         }
@@ -166,15 +196,42 @@ namespace Business.Implements
                 if (rol == null)
                     throw new BusinessException("Rol no válido");
 
-                var usuario = _mapper.Map<Usuario>(usuarioCreateDto);
-                usuario.PasswordHash = HashPassword(usuarioCreateDto.PasswordHash);
-                usuario.FechaCreacion = DateTime.UtcNow;
+                // IMPORTANTE: Hashear la contraseña ANTES de crear el objeto
+                var hashedPassword = HashPassword(usuarioCreateDto.PasswordHash);
+                _logger.LogInformation($"Password hasheado generado: {!string.IsNullOrEmpty(hashedPassword)}");
+                
+                // Crear el Usuario MANUALMENTE sin AutoMapper para evitar problemas
+                var usuario = new Usuario
+                {
+                    Nombre = usuarioCreateDto.Nombre,
+                    Email = usuarioCreateDto.Email,
+                    PasswordHash = hashedPassword, // Asignar directamente
+                    Telefono = usuarioCreateDto.Telefono,
+                    Direccion = usuarioCreateDto.Direccion,
+                    Ciudad = usuarioCreateDto.Ciudad,
+                    Pais = usuarioCreateDto.Pais,
+                    RolId = usuarioCreateDto.RolId,
+                    Active = usuarioCreateDto.Activo,
+                    FechaCreacion = DateTime.UtcNow,
+                    Name = usuarioCreateDto.Nombre, // Para BaseModel
+                    Description = $"Usuario: {usuarioCreateDto.Nombre}"
+                };
+
+                // Log para debug
+                _logger.LogInformation($"Creando usuario con email: {usuario.Email}");
+                _logger.LogInformation($"Password hash: {usuario.PasswordHash?.Substring(0, 20)}...");
 
                 var usuarioCreado = await _usuarioData.CreateAsync(usuario);
+                
+                // Verificar que se guardó correctamente
+                _logger.LogInformation($"Usuario creado con ID: {usuarioCreado.Id}");
+                _logger.LogInformation($"PasswordHash guardado: {!string.IsNullOrEmpty(usuarioCreado.PasswordHash)}");
+                
                 return _mapper.Map<UsuarioDto>(usuarioCreado);
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error en RegisterAsync: {ex.Message}");
                 throw new BusinessException("Error al registrar el usuario", ex);
             }
         }
@@ -278,17 +335,17 @@ namespace Business.Implements
 
         private string GenerateJwtToken(Usuario usuario)
         {
-            var jwtSettings = _configuration.GetSection("Jwt");
-            var secretKey = jwtSettings["SecretKey"];
-            var issuer = jwtSettings["Issuer"];
-            var audience = jwtSettings["Audience"];
+            var jwtSettings = _configuration.GetSection("JwtSettings");
+            var secretKey = jwtSettings["Key"] ?? throw new InvalidOperationException("JWT Key not configured");
+            var issuer = jwtSettings["Issuer"] ?? "AccesoriosApi";
+            var audience = jwtSettings["Audience"] ?? "AccesoriosClient";
 
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
                 new Claim(ClaimTypes.Name, usuario.Nombre),
                 new Claim(ClaimTypes.Email, usuario.Email),
-                new Claim(ClaimTypes.Role, usuario.Rol.Codigo)
+                new Claim(ClaimTypes.Role, usuario.Rol?.Name ?? "Cliente")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));

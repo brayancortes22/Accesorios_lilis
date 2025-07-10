@@ -20,7 +20,8 @@ namespace Utilities.Mappers.Profiles
             // UsuarioCreateDto -> Usuario
             CreateMap<UsuarioCreateDto, Usuario>()
                 .ForMember(dest => dest.Active, opt => opt.MapFrom(src => src.Activo))
-                .ForMember(dest => dest.FechaCreacion, opt => opt.MapFrom(src => DateTime.UtcNow));
+                .ForMember(dest => dest.FechaCreacion, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.PasswordHash)); // Mapear la contraseña
 
             // UsuarioUpdateDto -> Usuario
             CreateMap<UsuarioUpdateDto, Usuario>()
