@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AuthContextType, User, RegisterData } from '../types';
 import { authService } from '../services/api';
+import { extractRoleFromJWT } from '../utils/jwt';
 
 // Tipo para la respuesta del backend que incluye rolId
 interface BackendUser {
@@ -59,28 +60,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(true);
       const response = await authService.login(email, password);
       
-      // Mapear el rolId a rol de texto - verificar tanto rolId como role
-      let userRole: 'admin' | 'user' = 'user';
-      
       // Log para debugging
       console.log('Login response:', response);
       console.log('User data:', response.user);
       
       const backendUser = response.user as unknown as BackendUser;
       
-      // Verificar rolId (desde la base de datos)
-      if (backendUser && backendUser.rolId === 1) {
+      // Extraer el rol desde el JWT primero
+      let userRole: 'admin' | 'user' = 'user';
+      if (response.token) {
+        userRole = extractRoleFromJWT(response.token);
+        console.log('🎫 Role extracted from JWT:', userRole);
+      }
+      
+      // Fallback: verificar rolId (desde la base de datos)
+      if (userRole === 'user' && backendUser && backendUser.rolId === 1) {
         userRole = 'admin';
-      } else if (backendUser && backendUser.rolId === 2) {
+        console.log('🔧 Role corrected from rolId:', userRole);
+      } else if (userRole === 'user' && backendUser && backendUser.rolId === 2) {
         userRole = 'user';
       }
-      // Fallback: verificar role como string
-      else if (backendUser && backendUser.role === 'admin') {
+      
+      // Fallback: verificar role como string (tanto minúsculas como mayúsculas)
+      if (userRole === 'user' && backendUser && (
+        backendUser.role === 'admin' || 
+        backendUser.role === 'Admin' || 
+        backendUser.role === 'ADMIN'
+      )) {
         userRole = 'admin';
+        console.log('🔧 Role corrected from string:', backendUser.role);
       }
+      
       // Fallback adicional: usar email para determinar admin (temporal)
-      else if (backendUser && (
+      if (userRole === 'user' && backendUser && (
         backendUser.email === 'elmundodelanime92@gmail.com' || 
+        backendUser.email === 'brayanstidcorteslombana@gmail.com' ||
         backendUser.email === 'admin@glamstore.com' ||
         backendUser.name === 'admin'
       )) {
@@ -88,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('🔧 Usando fallback de email para determinar admin');
       }
       
-      console.log('Mapped role:', userRole);
+      console.log('✅ Final mapped role:', userRole);
       
       const userData: User = {
         id: backendUser.id,

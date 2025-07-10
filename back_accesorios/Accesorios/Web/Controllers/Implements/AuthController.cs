@@ -53,7 +53,9 @@ namespace Web.Controllers.Implements
                         email = loginResponse.Usuario.Email,
                         phone = loginResponse.Usuario.Telefono,
                         address = loginResponse.Usuario.Direccion,
-                        createdAt = loginResponse.Usuario.FechaCreacion
+                        createdAt = loginResponse.Usuario.FechaCreacion,
+                        rolId = loginResponse.Usuario.RolId,
+                        role = loginResponse.Usuario.RolNombre ?? "Cliente"
                     },
                     token = loginResponse.Token
                 };
