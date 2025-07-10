@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DDL\**" />
+    <Compile Remove="Dtos\FormDto\**" />
+    <Compile Remove="Dtos\FormModuleDto\**" />
+    <Compile Remove="Dtos\ModuleDto\**" />
+    <Compile Remove="Dtos\PersonDto\**" />
+    <Compile Remove="Dtos\RolFormPermissionDto\**" />
+    <EmbeddedResource Remove="DDL\**" />
+    <EmbeddedResource Remove="Dtos\FormDto\**" />
+    <EmbeddedResource Remove="Dtos\FormModuleDto\**" />
+    <EmbeddedResource Remove="Dtos\ModuleDto\**" />
+    <EmbeddedResource Remove="Dtos\PersonDto\**" />
+    <EmbeddedResource Remove="Dtos\RolFormPermissionDto\**" />
+    <None Remove="DDL\**" />
+    <None Remove="Dtos\FormDto\**" />
+    <None Remove="Dtos\FormModuleDto\**" />
+    <None Remove="Dtos\ModuleDto\**" />
+    <None Remove="Dtos\PersonDto\**" />
+    <None Remove="Dtos\RolFormPermissionDto\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5"> 
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.3.efcore.9.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
+  </ItemGroup>
+
+</Project>

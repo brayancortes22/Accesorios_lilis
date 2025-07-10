@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Jwt\**" />
+    <Compile Remove="Outh\**" />
+    <EmbeddedResource Remove="Jwt\**" />
+    <EmbeddedResource Remove="Outh\**" />
+    <None Remove="Jwt\**" />
+    <None Remove="Outh\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Mail\App" />
+    <None Remove="Mail\NewFile1.txt" />
+    <None Remove="Mail\NewFile2.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="EnterpriseLibrary.Validation" Version="6.0.1304" />
+    <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="MailKit" Version="4.12.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
+    <PackageReference Include="MimeKit" Version="4.12.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+
+
+    <ProjectReference Include="..\Entity\Entity.csproj" />
+  </ItemGroup>
+
+</Project>
