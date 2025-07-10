@@ -18,6 +18,8 @@ import Catalog from "./pages/Catalog";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import SystemStatus from "./pages/SystemStatus";
+import EmergencyLogin from "./pages/EmergencyLogin";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -38,10 +40,19 @@ const App = () => (
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/cart" element={<Cart />} />
-                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/admin" element={
+                      <ProtectedRoute requireAdmin={true}>
+                        <Admin />
+                      </ProtectedRoute>
+                    } />
                     <Route path="/catalog" element={<Catalog />} />
-                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/profile" element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    } />
                     <Route path="/system-status" element={<SystemStatus />} />
+                    <Route path="/emergency-login" element={<EmergencyLogin />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </main>

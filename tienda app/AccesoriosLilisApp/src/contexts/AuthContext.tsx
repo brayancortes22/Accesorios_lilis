@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AuthContextType, User, RegisterData } from '../types';
 import { authService } from '../services/api';
@@ -35,13 +34,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isAdmin = user?.role === 'admin';
 
   useEffect(() => {
-    // Check if user is stored in localStorage
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    // Verificar si hay un usuario almacenado
+    initializeAuth();
   }, []);
+
+  const initializeAuth = async () => {
+    try {
+      const isAuthenticated = await authService.isAuthenticated();
+      if (isAuthenticated) {
+        const storedUser = await authService.getStoredUserData();
+        if (storedUser) {
+          setUser(storedUser);
+        }
+      }
+    } catch (error) {
+      console.error('Error initializing auth:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
@@ -55,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('Login response:', response);
       console.log('User data:', response.user);
       
-      const backendUser = response.user as BackendUser;
+      const backendUser = response.user as unknown as BackendUser;
       
       // Verificar rolId (desde la base de datos)
       if (backendUser && backendUser.rolId === 1) {
@@ -92,7 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
 
       setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
+      await authService.storeUserData(userData);
       return true;
     } catch (error) {
       console.error('Login error:', error);
@@ -110,7 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Mapear el rolId a rol de texto
       let userRole: 'admin' | 'user' = 'user';
       
-      const backendUser = response.user as BackendUser;
+      const backendUser = response.user as unknown as BackendUser;
       
       if (backendUser && backendUser.rolId === 1) {
         userRole = 'admin';
@@ -131,7 +142,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
 
       setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
+      await authService.storeUserData(newUser);
       return true;
     } catch (error) {
       console.error('Registration error:', error);
@@ -154,9 +165,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    authService.logout();
+  const logout = async () => {
+    try {
+      await authService.logout();
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (

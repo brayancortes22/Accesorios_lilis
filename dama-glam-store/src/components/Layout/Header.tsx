@@ -1,14 +1,14 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, User, Heart, Search } from 'lucide-react';
+import { ShoppingBag, User, Heart, Search, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 
 const Header = () => {
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const { totalItems } = useCart();
 
   const isActive = (path: string) => location.pathname === path;
@@ -55,6 +55,13 @@ const Header = () => {
 
             {user ? (
               <div className="flex items-center space-x-2">
+                {isAdmin && (
+                  <Button variant="ghost" size="icon" asChild>
+                    <Link to="/admin" title="Panel de Administración">
+                      <Settings className="h-5 w-5" />
+                    </Link>
+                  </Button>
+                )}
                 <Button variant="ghost" size="icon" asChild>
                   <Link to="/profile">
                     <User className="h-5 w-5" />

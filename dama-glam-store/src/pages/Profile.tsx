@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { Link } from 'react-router-dom';
+import UserInfo from '@/components/UserInfo';
 
 const Profile = () => {
   const { user, logout } = useAuth();
@@ -118,6 +119,9 @@ const Profile = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Información detallada del usuario */}
+            <UserInfo />
 
             {/* Carrito Actual */}
             {items.length > 0 && (

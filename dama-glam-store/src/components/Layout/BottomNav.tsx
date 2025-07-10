@@ -1,12 +1,14 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Grid3X3, ShoppingBag, User } from 'lucide-react';
+import { Home, Grid3X3, ShoppingBag, User, Settings } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const BottomNav = () => {
   const location = useLocation();
   const { totalItems } = useCart();
+  const { isAdmin } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -16,6 +18,11 @@ const BottomNav = () => {
     { path: '/cart', icon: ShoppingBag, label: 'Carrito', badge: totalItems },
     { path: '/profile', icon: User, label: 'Perfil' },
   ];
+
+  // Agregar opción de admin si el usuario es admin
+  if (isAdmin) {
+    navItems.splice(3, 0, { path: '/admin', icon: Settings, label: 'Admin' });
+  }
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t z-50">

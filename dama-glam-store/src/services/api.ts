@@ -92,7 +92,7 @@ export const authService = {
         telefono: userData.phone,
         direccion: userData.address,
         activo: true,
-        rolId: 2 // Rol de cliente por defecto
+        rolId: userData.role === 'admin' ? 1 : 2 // 1 para admin, 2 para cliente
       }),
     });
     

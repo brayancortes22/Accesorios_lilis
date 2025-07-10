@@ -7,6 +7,7 @@ export interface User {
   address: string;
   country: string;
   city: string;
+  role: 'admin' | 'user';
   createdAt: Date;
 }
 
@@ -30,8 +31,10 @@ export interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
   register: (userData: RegisterData) => Promise<boolean>;
+  createUser: (userData: RegisterData & { role: 'admin' | 'user' }) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
+  isAdmin: boolean;
 }
 
 export interface RegisterData {
@@ -42,4 +45,5 @@ export interface RegisterData {
   address: string;
   country: string;
   city: string;
+  role?: 'admin' | 'user';
 }

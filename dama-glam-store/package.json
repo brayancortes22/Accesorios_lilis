@@ -15,7 +15,10 @@
     "debug:login": "node scripts/debug-login.js",
     "test:user": "node scripts/test-new-user.js",
     "test:new-user": "node scripts/test-new-user.js",
-    "check:backend": "node scripts/check-backend.js"
+    "check:backend": "node scripts/check-backend.js",
+    "setup:admin": "node scripts/setup-admin.js",
+    "debug:roles": "node scripts/debug-roles.js",
+    "fix:roles": "node scripts/fix-roles.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
