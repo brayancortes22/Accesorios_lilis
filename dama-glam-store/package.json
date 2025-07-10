@@ -14,7 +14,8 @@
     "test:functionality": "node scripts/test-functionality.js",
     "debug:login": "node scripts/debug-login.js",
     "test:user": "node scripts/test-new-user.js",
-    "test:new-user": "node scripts/test-new-user.js"
+    "test:new-user": "node scripts/test-new-user.js",
+    "check:backend": "node scripts/check-backend.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

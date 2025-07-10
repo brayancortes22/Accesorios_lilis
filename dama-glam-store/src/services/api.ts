@@ -244,6 +244,7 @@ export const cartService = {
 };
 
 // Funciones auxiliares
+// Función para mapear categorías desde el backend
 const mapCategoryFromBackend = (seccionNombre: string): Product['category'] => {
   const mappings: Record<string, Product['category']> = {
     'Aretes': 'earrings',

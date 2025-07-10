@@ -12,14 +12,14 @@ interface DatabaseStatus {
   usuarios: number;
 }
 
-interface ConnectionStatus {
+interface ConnectionStatusType {
   isConnected: boolean;
   status: DatabaseStatus | null;
   error: string | null;
 }
 
 export const ConnectionStatus: React.FC = () => {
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatusType>({
     isConnected: false,
     status: null,
     error: null
@@ -29,13 +29,19 @@ export const ConnectionStatus: React.FC = () => {
   const checkConnection = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${config.API_BASE_URL}/Seed/status`);
+      // Primero verificar si el backend está corriendo
+      const response = await fetch(`${config.API_BASE_URL}/Producto`);
       
       if (response.ok) {
-        const status = await response.json();
+        const productos = await response.json();
         setConnectionStatus({
           isConnected: true,
-          status,
+          status: {
+            roles: 0,
+            secciones: 0,
+            productos: productos.length || 0,
+            usuarios: 0
+          },
           error: null
         });
       } else {

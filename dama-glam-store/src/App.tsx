@@ -17,6 +17,7 @@ import Admin from "./pages/Admin";
 import Catalog from "./pages/Catalog";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import SystemStatus from "./pages/SystemStatus";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
                     <Route path="/admin" element={<Admin />} />
                     <Route path="/catalog" element={<Catalog />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/system-status" element={<SystemStatus />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </main>
